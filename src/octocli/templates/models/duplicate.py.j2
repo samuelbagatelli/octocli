@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Any
+
 from sqlalchemy import BigInteger, DateTime, TextClause
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -11,6 +14,7 @@ class {{ class_name }}(PrefixBase):
         BigInteger,
         primary_key=True,
         index=True,
+        nullable=False,
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

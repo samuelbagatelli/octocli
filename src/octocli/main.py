@@ -1,9 +1,7 @@
-from rich import print
 from typer import Typer
+
+from .commands import model
 
 app = Typer(name="octocli")
 
-
-@app.command()
-def load():
-    print("Loading portal gun")
+app.add_typer(model.app, name="model")

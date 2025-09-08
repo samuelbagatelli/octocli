@@ -6,7 +6,7 @@
 <br />
 <div align="center">
     <a href="https://pypi.org/project/octocli/">
-        <img src="img/logo.png" alt="Logo" width="80" height="80" />
+        <img src="assets/logo.png" alt="Logo" width="80" height="80" />
     </a>
     <h3 align="center">OCTO CLI</h3>
     <p align="center">
@@ -61,7 +61,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-![octocli example][product-screenshot]
+![octocli example][usage-example]
 
 The OCTO CLI is made to manage a FastAPI advanced projetc, following the patterns used on CPID.
 
@@ -99,8 +99,13 @@ class Base(DeclarativeBase):
 
 ### Description
 
-<!-- TODO: Insert a description of the project -->
-The Beija-Flor project is a...
+OCTO CLI is a powerful command-line interface (CLI) tool to initiate, manage, and escalate your FastAPI projects. Focused on an advanced architecture with SQLAlchemy for data access and Pydantic for validation, the CLI automates repetitive tasks and promotes development best practices, allowing you to concentrate on the logic of your application.
+
+#### **Key Features**
+
+- **Quick Project Startup:** Create a complete, production-ready project structure with a single command.
+- **Intelligent Code Generation:** Automate the creation of SQLAlchemy models, Pydantic schemas, and API endpoints.
+- **Modular and Scalable Structure:** Organize your code in a logical and cohesive way, prepared for growth.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -108,9 +113,9 @@ The Beija-Flor project is a...
 
 ### Built With
 
-* [![FastAPI][fastapi]][fastapi-url]
+* [![Typer][typer]][typer-url]
 * [![Pydantic][pydantic]][pydantic-url]
-* [![SQLAlchemy][sqlalchemy]][sqlalchemy-url]
+* [![Jinja2][jinja]][jinja-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -119,54 +124,25 @@ The Beija-Flor project is a...
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Some instructions to get the API up and running.
-This will get the API running on your local environment.
+Some instructions to get the CLI on your terminal.
 
 ### Prerequisites
 
-The only prerequisite is Python 3.8+ installed. Most of linux distros come with python pre-installed (WSL included).
-
-For Windows users: **No support on documentation yet.**
+* [![Python][python]][python-url]
+* [![Pip][pip]][pip-url]
 
 ### Installation
 
-1. Clone the repository
+1. Install OCTO via pip (locally)
+
     ```sh
-    git clone git@gitlab.arandu.org.br:softwarecpid/beija-flor/beijaflor-backend.git
-    cd beijaflor-backend
+    pip install octocli
     ```
 
-2. Start a python virtual environment
+* For an global installation, use:
+  
     ```sh
-    python3 -m venv .venv
-    ```
-
-3. Source your shell to the virtual environment
-    ```sh
-    source .venv/bin/activate
-    ```
-
-4. Install project dependencies
-    ```sh
-    pip install -r requirements.txt
-    ```
-
-5. Create the `.env` file
-    ```sh
-    cat app/settings/.env.example > app/settings/.env
-    ```
-
-6. Now fill the `.env` with the correct variables
-
-7. Run the application (development mode)
-    ```sh
-    fastapi dev app/main.py
-    ```
-
-8. Change git remote url to avoid accidental pushes to base project (optional)
-    ```sh
-    git remote set-url origin ""
-    git remote -v
+    sudo pip install octocli
     ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -176,16 +152,7 @@ For Windows users: **No support on documentation yet.**
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-The usage cases of the API are listed on the `/docs` endpoint. Feel free to take a look.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-All your current tasks are listed on the GPLab plataform. See [your tasks](https://gplab.info/index.php/projects/all_tasks) to know what you have to do.
+<!-- TODO: insert usage cases and add an /docs -->
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -194,7 +161,9 @@ All your current tasks are listed on the GPLab plataform. See [your tasks](https
 <!-- CONTRIBUTING -->
 ## Contributing
 
-<!-- TODO: Add gitlab contributing routine -->
+Create an issue and wait. ;)
+
+Or, fork the project and go on.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -210,11 +179,14 @@ Distributed under the <project_license>. See `LICENSE.txt` for more information.
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
-[product-screenshot]: imgs/screenshot.png
-[fastapi]: https://img.shields.io/badge/fastapi-009688?style=for-the-badge&logo=fastapi&logoColor=white
-[fastapi-url]: https://fastapi.tiangolo.com/
+[usage-example]: assets/usage-example.gif
+[typer]: https://img.shields.io/badge/typer-060608?style=for-the-badge&logo=typer&logoColor=white
+[typer-url]: https://typer.tiangolo.com/
 [pydantic]: https://img.shields.io/badge/pydantic-E92063?style=for-the-badge&logo=pydantic
 [pydantic-url]: https://docs.pydantic.dev/2.0/
-[sqlalchemy]: https://img.shields.io/badge/sqlalchemy-D71F00?style=for-the-badge&logo=sqlalchemy
-[sqlalchemy-url]: https://www.sqlalchemy.org/
-
+[jinja]: https://img.shields.io/badge/jinja-7E0C1B?style=for-the-badge&logo=jinja&logoColor=white
+[jinja-url]: https://jinja.palletsprojects.com/en/stable/
+[python]: https://img.shields.io/badge/python-1E415E?style=for-the-badge&logo=python&logoColor=white
+[python-url]: https://www.python.org/
+[pip]: https://img.shields.io/badge/pip-0073B7?style=for-the-badge&logo=pypi&logoColor=white
+[pip-url]: https://pypi.org/

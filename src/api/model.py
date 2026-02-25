@@ -10,7 +10,6 @@ class Model:
         self.classname = tablename.title().replace("_", "")
 
     def create(self, dest: str = os.path.abspath(os.getcwd())) -> None:
-        # reads the template
         tpath = f"{dest}/templates/models/standard.py"
         with open(tpath) as file:
             content = file.read()
@@ -18,21 +17,27 @@ class Model:
         content = content.replace("{{ classname }}", self.classname)
         content = content.replace("{{ tablename }}", self.tablename)
 
-        # create file in `dest` directory
         dpath = f"{dest}/{self.tablename}.py"
         with open(dpath, "w") as file:
             file.write(content)
 
-    def read(self) -> None:
-        pass
+    def read(self, src: str = os.path.abspath(os.getcwd())) -> str:
+        srcpath = src if src.endswith(".py") else f"{src}/{self.tablename}.py"
+        with open(srcpath, "r") as file:
+            content = file.read()
 
-    def update(self) -> None:
-        pass
+        return content
 
-    def delete(self) -> None:
-        pass
+    def update(
+        self,
+        content: str,
+        mode: str = "w",
+        src: str = os.path.abspath(os.getcwd()),
+    ) -> None:
+        srcpath = src if src.endswith(".py") else f"{src}/{self.tablename}.py"
+        with open(srcpath, mode) as file:
+            file.write(content)
 
-
-m = Model("table_name")
-
-m.create()
+    def delete(self, src: str = os.path.abspath(os.getcwd())) -> None:
+        srcpath = src if src.endswith(".py") else f"{src}/{self.tablename}.py"
+        os.remove(srcpath)

@@ -7,22 +7,19 @@ class Model:
         self.classname = tablename.title().replace("_", "")
 
     def create(self, destpath: Path = Path.cwd() / "models") -> None:
-        temppath = Path(__file__).parent / "templates" / "models" / "standard.py"
-        with temppath.open() as file:
+        tmplpath = Path(__file__).parent / "templates" / "models" / "standard.py"
+        with tmplpath.open() as file:
             content = file.read()
 
         content = content.replace("{{ classname }}", self.classname)
         content = content.replace("{{ tablename }}", self.tablename)
 
-        if not destpath.exists() and not destpath.name.endswith(".py"):
+        ispyfile = destpath.name.endswith(".py")
+        if not destpath.exists() and not ispyfile:
             destpath.mkdir()
 
-        filepath = (
-            destpath
-            if destpath.name.endswith(".py")
-            else Path(f"{destpath}/{self.tablename}.py")
-        )
-        with open(filepath, "w") as file:
+        filepath = destpath if ispyfile else destpath / f"{self.tablename}.py"
+        with filepath.open("w") as file:
             file.write(content)
 
     def read(self, srcpath: Path = Path.cwd() / "models") -> str:
@@ -35,7 +32,7 @@ class Model:
         if not filepath.exists():
             return f"No such file or directory {filepath}"
 
-        with open(filepath, "r") as file:
+        with filepath.open("r") as file:
             content = file.read()
 
         return content

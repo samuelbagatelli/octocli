@@ -9,9 +9,13 @@ while True:
             m.create()
         case "R" | "r":
             print(m.read())
-        case "U" | "u":
-            m.update("test")
+        # case "U" | "u":
+        #     m.update("test")
         case "D" | "d":
             m.delete()
-        case _:
+        case "A" | "a":
+            m.addcol()
+        case "q":
             break
+        case _:
+            pass

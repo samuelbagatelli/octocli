@@ -1,14 +1,72 @@
 import re
+from dataclasses import dataclass
 from pathlib import Path
-from typing import TypedDict, Optional
+from typing import Optional
+
+SQLTYPES = {
+    "str": "String",
+    "int": "Integer",
+    "float": "Float",
+    "bool": "Boolean",
+    "datetime": "DateTime",
+    "date": "Date",
+    "bytes": "LargeBinary",
+    "dict": "JSON",
+    "list": "JSON",
+}
 
 
-class AddFlags(TypedDict):
-    optional: bool
-    nullable: bool
+@dataclass
+class ColumnFlags:
+    nullable: bool = False
+    primary_key: bool = False
+    unique: bool = False
+    index: bool = False
+    autoincrement: bool = False
+
+
+class Column:
+    def __init__(self, name: str, pytype: str, sqltype: Optional[str] = None, flags: ColumnFlags = ColumnFlags()) -> None:
+        self.name = name
+        self.pytype = pytype
+        self.flags = flags
+
+        self.sqltype = sqltype or SQLTYPES[pytype]
+
+    def build(self, indent: str = "    ") -> str:
+        mapped = f"Optional[{self.pytype}]" if self.flags.nullable else self.pytype
+
+        args = [self.sqltype]
+        args.append(f"nullable={self.flags.nullable}")
+
+        if self.flags.primary_key:
+            args.append("primary_key=True")
+        if self.flags.unique:
+            args.append("unique=True")
+        if self.flags.index:
+            args.append("index=True")
+        if self.flags.autoincrement:
+            args.append("autoincrement=True")
+
+        attrcolstr = f"{indent}{self.name}: Mapped[{mapped}] = mapped_column("
+
+        if len(args) > 2:
+            for i, arg in enumerate(args):
+                args[i] = f"\n{indent * 2}{arg}"
+
+            strargs = ",".join(args)
+
+            attrcolstr += strargs
+            attrcolstr += f"\n{indent})"
+        else:
+            strargs = ", ".join(args)
+            attrcolstr += f"{strargs})"
+
+        return attrcolstr
 
 
 class Model:
+    # TODO: optmize buffer control by adding a source attribute to the class to not open the file in every action
     def __init__(self, tablename: str, dirpath: Path = Path.cwd() / "models") -> None:
         self.tablename = tablename
         self.classname = tablename.title().replace("_", "")
@@ -75,8 +133,38 @@ class Model:
 
         return cols
 
-    def addcol(self, name: str, pytype: str, flags: Optional[AddFlags] = None) -> None:
+    def addcol(self, name: str, pytype: str, flags: ColumnFlags = ColumnFlags()) -> None:
         with self.filepath.open() as file:
             content = file.read()
 
-        self.parsecols(content)
+        cols = self.parsecols(content)
+        if any(col["name"] == name for col in cols):
+            raise ValueError(f"Column '{name}' already in model '{self.tablename}'.")
+
+        newcol = Column(name, pytype, flags=flags)
+
+        colstr = newcol.build()
+
+        inclass = False
+        insert_at = None
+        last = None
+
+        # find line to insert at
+        lines = content.splitlines()
+        for i, line in enumerate(lines):
+            if re.match(r"^class\s+\w+", line):
+                inclass = True
+            if inclass:
+                if re.match(r"^\s{4}(def |@)", line):
+                    insert_at = i
+                    break
+                if re.match(r"^s{4}\w+", line) and ("=" in line or ":" in line):
+                    last = i
+
+        if insert_at is None:
+            insert_at = (last + 1) if last is not None else len(lines)
+
+        lines.insert(insert_at, colstr)
+
+        with self.filepath.open("w") as file:
+            file.write("\n".join(lines))

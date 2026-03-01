@@ -14,7 +14,10 @@ while True:
         case "D" | "d":
             m.delete()
         case "A" | "a":
-            m.addcol()
+            colname = input("insert column name: ")
+            pytype = input("insert python type of the column: ")
+
+            m.addcol(colname, pytype)
         case "q":
             break
         case _:

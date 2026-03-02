@@ -26,7 +26,13 @@ class ColumnFlags:
 
 
 class Column:
-    def __init__(self, name: str, pytype: str, sqltype: Optional[str] = None, flags: ColumnFlags = ColumnFlags()) -> None:
+    def __init__(
+        self,
+        name: str,
+        pytype: str,
+        sqltype: Optional[str] = None,
+        flags: ColumnFlags = ColumnFlags(),
+    ) -> None:
         self.name = name
         self.pytype = pytype
         self.flags = flags
@@ -66,12 +72,9 @@ class Column:
 
 
 class Model:
-    # TODO: optmize buffer control by adding a source attribute to the class to not open the file in every action
     def __init__(self, tablename: str, dirpath: Path = Path.cwd() / "models") -> None:
         self.tablename = tablename
         self.classname = tablename.title().replace("_", "")
-
-        self.tmplpath = Path(__file__).parent / "templates" / "models" / "standard.py"
 
         if not dirpath.exists():
             dirpath.mkdir()
@@ -83,7 +86,8 @@ class Model:
         self.filepath = self.dirpath / f"{self.tablename}.py"
 
     def create(self) -> None:
-        with self.tmplpath.open() as file:
+        template_path = Path(__file__).parent / "templates" / "models" / "standard.py"
+        with template_path.open() as file:
             content = file.read()
 
         content = content.replace("{{ classname }}", self.classname)
@@ -133,7 +137,12 @@ class Model:
 
         return cols
 
-    def addcol(self, name: str, pytype: str, flags: ColumnFlags = ColumnFlags()) -> None:
+    def addcol(
+        self,
+        name: str,
+        pytype: str,
+        flags: ColumnFlags = ColumnFlags(),
+    ) -> None:
         with self.filepath.open() as file:
             content = file.read()
 
@@ -142,15 +151,20 @@ class Model:
             raise ValueError(f"Column '{name}' already in model '{self.tablename}'.")
 
         newcol = Column(name, pytype, flags=flags)
-
         colstr = newcol.build()
+
+        lines = content.splitlines()
+
+        # insert sqlalchemy type import
+        for i, line in enumerate(lines):
+            if re.match(r"^from\s+sqlalchemy", line):
+                pass
 
         inclass = False
         insert_at = None
         last = None
 
         # find line to insert at
-        lines = content.splitlines()
         for i, line in enumerate(lines):
             if re.match(r"^class\s+\w+", line):
                 inclass = True

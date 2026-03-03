@@ -158,7 +158,9 @@ class Model:
         # insert sqlalchemy type import
         for i, line in enumerate(lines):
             if re.match(r"^from\s+sqlalchemy", line):
-                pass
+                if newcol.sqltype not in line:
+                    lines[i] = f"{line}, {newcol.sqltype}"
+                break
 
         inclass = False
         insert_at = None

@@ -39,7 +39,7 @@ jobs:
     name: Publish to PyPI
     needs: test
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, "refs/tags/v")
+    if: startsWith(github.ref, 'refs/tags/v')
     environment:
       name: pypi
       url: https://pypi.org/p/octocli

@@ -7,10 +7,10 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
-## [Unreleased]
+## [0.1.1]
 
-### Added
-- (nada ainda)
+### Added - 2026-03-04
+- Resolvendo bugs de CI/CD
 
 ---
 

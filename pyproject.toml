@@ -1,47 +1,50 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "OctoCLI"
+name = "octocli"
 version = "0.1.0"
-description = "A Universal Command Line Interface (CLI) for managing FastAPI applications"
+description = "An Universal Command Line Interface (CLI) manager for FastAPI applications"
 readme = "README.md"
-authors = [{ name = "Samuel Bagatelli", email = "contato.samuelbagatelli@gmail.com" }]
 license = { file = "LICENSE" }
-keywords = ["fastapi", "sqlalchemy", "cli", "API", "REST", "model", "codegen", "manager"]
+authors = [
+    { name = "Samuel Bagatelli", email = "contato.samuelbagatelli@gmail.com" }
+]
+keywords = ["fastapi", "sqlalchemy", "cli", "codegen", "model"]
 classifiers = [
-	"Development Status :: 3 - Alpha",
-	"Environment :: Console",
-	"License :: OSI Approved :: MIT License",
-	"Programming Language :: Python :: 3",
-	"Programming Language :: Python :: 3.10",
-	"Programming Language :: Python :: 3.11",
-	"Programming Language :: Python :: 3.12",
-	"Topic :: Software Development :: Code Generations",
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Code Generators",
 ]
 requires-python = ">=3.10"
 dependencies = []
 
 [project.optional-dependencies]
 dev = [
-	"pytest>=8.0",
-	"ruff>=0.4",
+    "pytest>=8.0",
+    "ruff>=0.4",
 ]
 
 [project.urls]
 Homepage = "https://github.com/samuelbagatelli/octocli"
-Repository = "https://github.com/samuelbagatelli/octocli" 
+Repository = "https://github.com/samuelbagatelli/octocli"
 "Bug Tracker" = "https://github.com/samuelbagatelli/octocli/issues"
 Changelog = "https://github.com/samuelbagatelli/octocli/blob/main/CHANGELOG.md"
 
 [project.scripts]
-octo = "octocli.cli:main"
+octocli = "octocli.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
-# --- Development Tools ---
+# ─── Ferramentas de desenvolvimento ──────────────────────────────────────────
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -18,6 +18,10 @@ while True:
             pytype = input("insert python type of the column: ")
 
             m.addcol(colname, pytype)
+        case "X" | "x":
+            colname = input("insert column name: ")
+
+            m.rmcol(colname)
         case "q":
             break
         case _:

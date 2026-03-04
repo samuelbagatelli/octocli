@@ -184,3 +184,26 @@ class Model:
 
         with self.filepath.open("w") as file:
             file.write("\n".join(lines))
+
+    def rmcol(self, name: str) -> None:
+        with self.filepath.open() as file:
+            content = file.read()
+
+        cols = self.parsecols(content)
+        names = [col["name"] for col in cols]
+
+        if name not in names:
+            raise ValueError(f"Column '{name}' not found.")
+
+        pattern = re.compile(
+            rf"^\s{'{4}'}{re.escape(name)}:\s.+\([\s\S]*",
+            re.MULTILINE,
+        )
+        match = pattern.findall(content)[0]
+
+        lines = content.splitlines()
+        lines.remove(match)
+
+        finalstr = "\n".join(lines)
+        with self.filepath.open("w") as file:
+            file.write(finalstr)

@@ -1,6 +1,8 @@
-from _typeshed import FileDescriptorOrPath
 from pathlib import Path
+
 import pytest
+from _typeshed import FileDescriptorOrPath
+
 from octocli.model import Model
 
 # ─────────────────────────── FIXTURES ────────────────────────────────────────

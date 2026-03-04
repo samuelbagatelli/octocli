@@ -1,9 +1,8 @@
-from pathlib import Path
 import sys
-from octocli import __version__
-
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from pathlib import Path
 
+from octocli import __version__
 from octocli.model import ColumnFlags, Model
 
 
@@ -58,9 +57,9 @@ exemplos:
 
 
 def _interactive(model: Model) -> None:
-    print(f"\n  ╔══════════════════════════════╗")
-    print(f"  ║   fam — FastAPI Model Mgr    ║")
-    print(f"  ╚══════════════════════════════╝")
+    print("\n  ╔══════════════════════════════╗")
+    print("  ║   fam — FastAPI Model Mgr    ║")
+    print("  ╚══════════════════════════════╝")
     print(f"  Arquivo : {model.filepath}")
 
     while True:

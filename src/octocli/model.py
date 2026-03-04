@@ -30,7 +30,7 @@ class Column:
         self,
         name: str,
         pytype: str,
-        sqltype: Optional[str] = None,
+        sqltype: str | None = None,
         flags: ColumnFlags = ColumnFlags(),
     ) -> None:
         self.name = name
@@ -207,7 +207,7 @@ class Model:
             content = file.read()
 
         cols = self.parsecols(content)
-        label = f"\n  Style detected: modern (Mapped)"
+        label = "\n  Style detected: modern (Mapped)"
         header = f"  {'Name':<20} {'Type':<15} {'Nullable':<10} {'Style'}"
         separator = "  " + "─" * 58
         lines: list[str] = []

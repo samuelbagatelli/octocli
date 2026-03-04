@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-SQLTYPES = {
+SQLTYPES: dict[str, str] = {
     "str": "String",
     "int": "Integer",
     "float": "Float",
@@ -37,7 +37,7 @@ class Column:
         self.pytype = pytype
         self.flags = flags
 
-        self.sqltype = sqltype or SQLTYPES[pytype]
+        self.sqltype = sqltype or SQLTYPES.get(pytype, pytype)
 
     def build(self, indent: str = "    ") -> str:
         mapped = f"Optional[{self.pytype}]" if self.flags.nullable else self.pytype
@@ -105,16 +105,12 @@ class Model:
 
         return content
 
-    # def update(self, content: str) -> None:
-    #     with self.filepath.open("w") as file:
-    #         file.write(content)
-
     def delete(self) -> None:
         if self.filepath.exists():
             self.filepath.unlink(True)
 
-    def parsecols(self, src: str) -> list:
-        cols = []
+    def parsecols(self, src: str) -> list[dict]:
+        cols: list[dict] = []
 
         pattern = re.compile(
             r"^\s{4}(\w+):\s*Mapped\[(.+?)\]\s*=\s*mapped_column\((.+?)\)",
@@ -155,7 +151,6 @@ class Model:
 
         lines = content.splitlines()
 
-        # insert sqlalchemy type import
         for i, line in enumerate(lines):
             if re.match(r"^from\s+sqlalchemy", line):
                 if newcol.sqltype not in line:
@@ -166,7 +161,6 @@ class Model:
         insert_at = None
         last = None
 
-        # find line to insert at
         for i, line in enumerate(lines):
             if re.match(r"^class\s+\w+", line):
                 inclass = True
@@ -207,3 +201,21 @@ class Model:
         finalstr = "\n".join(lines)
         with self.filepath.open("w") as file:
             file.write(finalstr)
+
+    def lscols(self) -> str:
+        with self.filepath.open() as file:
+            content = file.read()
+
+        cols = self.parsecols(content)
+        label = f"\n  Style detected: modern (Mapped)"
+        header = f"  {'Name':<20} {'Type':<15} {'Nullable':<10} {'Style'}"
+        separator = "  " + "─" * 58
+        lines: list[str] = []
+        for col in cols:
+            nullable = "✓" if col["nullable"] else "✗"
+            line = f"  {col['name']:<20} {col['type']:<15} {nullable:<10} {'modern'}"
+            lines.append(line)
+
+        table = f"{label}\n{header}\n{separator}\n" + "\n".join(lines)
+
+        return table

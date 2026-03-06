@@ -1,70 +1,23 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "octocli"
 version = "0.1.0"
 description = "An Universal Command Line Interface (CLI) manager for FastAPI applications"
 readme = "README.md"
-license = { file = "LICENSE" }
+license = { text = "MIT" }
 authors = [
     { name = "Samuel Bagatelli", email = "contato.samuelbagatelli@gmail.com" }
 ]
-keywords = ["fastapi", "sqlalchemy", "cli", "codegen", "model"]
-classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Environment :: Console",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: Software Development :: Code Generators",
-]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = []
-
-[project.optional-dependencies]
-dev = [
-    "pytest>=8.0",
-    "ruff>=0.4",
-]
 
 [project.urls]
 Homepage = "https://github.com/samuelbagatelli/octocli"
 Repository = "https://github.com/samuelbagatelli/octocli"
-"Bug Tracker" = "https://github.com/samuelbagatelli/octocli/issues"
-Changelog = "https://github.com/samuelbagatelli/octocli/blob/main/CHANGELOG.md"
+Issues = "https://github.com/samuelbagatelli/octocli/issues"
 
 [project.scripts]
-octocli = "octocli.cli:main"
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
-# ─── Ferramentas de desenvolvimento ──────────────────────────────────────────
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-v --tb=short"
-
-[tool.ruff]
-src = ["src"]
-line-length = 100
-target-version = "py310"
-exclude = [
-    "build",
-    "dist",
-    ".venv",
-    "templates",
-]
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "UP"]
-ignore = ["F401", "F841"]
-
-[tool.mypy]
-python_version = "3.10"
-strict = true
+octo = "octocli.cli:main"

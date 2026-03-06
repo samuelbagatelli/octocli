@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "octocli"
-version = "0.2.0"
+version = "0.2.1"
 description = "An Universal Command Line Interface (CLI) manager for FastAPI applications"
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
     { name = "Samuel Bagatelli", email = "contato.samuelbagatelli@gmail.com" }
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = []
 
 [project.urls]

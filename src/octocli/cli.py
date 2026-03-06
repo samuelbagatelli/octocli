@@ -1,168 +1,93 @@
-import sys
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
-from pathlib import Path
 
 from octocli import __version__
-from octocli.model import ColumnFlags, Model
+from octocli.model import Model
 
 
 def build_parser() -> ArgumentParser:
-    parser = ArgumentParser(
-        prog="octo",
-        formatter_class=RawDescriptionHelpFormatter,
-        epilog="""
-exemplos:
-    octo models                         # modo interativo
-    octo models user read            # ler arquivo
-    octo models user add phone str   # adicionar coluna
-    octo models user add age int --nullable --default=0
-    octo models user add token str --nullable
-    octo models user rm phone        # remover coluna
-        """,
-    )
+    parser = ArgumentParser("octo", formatter_class=RawDescriptionHelpFormatter)
 
     parser.add_argument(
         "--version",
         "-v",
         action="version",
-        version=f"octo {__version__}",
+        version=f"🐙 OctoCLI {__version__} 🐙",
     )
 
-    parser.add_argument("directory", help="Caminho para o diretório")
+    subparsers = parser.add_subparsers(dest="command", required=True)
 
-    parser.add_argument("tablename", nargs="?", help="Nome da tabela/model")
-
-    subparsers = parser.add_subparsers(dest="action", help="Ações disponíveis")
-
-    parser_list = subparsers.add_parser("list", help="List columns of model")
-
-    parser_read = subparsers.add_parser("read", help="Ler o conteúdo do arquivo")
-
-    parser_add = subparsers.add_parser("add", help="Adicionar uma nova coluna")
-    parser_add.add_argument("column", help="Nome da coluna/atributo")
-    parser_add.add_argument("type", help="Tipo de dado (ex: str, int)")
-    parser_add.add_argument(
-        "--nullable",
-        action="store_true",
-        help="Define se a coluna pode ser nula",
+    subparsers.add_parser(
+        "init",
+        help="Initialize a FastAPI repository on CPID patterns",
     )
-    parser_add.add_argument("--default", type=str, help="Valor padrão da coluna")
 
-    parser_rm = subparsers.add_parser("rm", help="Remover coluna existente")
-    parser_rm.add_argument("column", help="Nome da coluna/atributo a ser removida(o)")
+    model_parser = subparsers.add_parser(
+        "model",
+        help="Manages SQLAlchemy Models on cwd",
+    )
+    model_subparser = model_parser.add_subparsers(dest="action", required=True)
 
-    subparsers.add_parser("interactive", aliases=["i"], help="Modo interativo com menu")
+    model_create = model_subparser.add_parser(
+        "create",
+        help="Create a model following CPID standard pattern",
+    )
+    model_create.add_argument("tablename", required=True, help="SQL table name")
+
+    model_read = model_subparser.add_parser(
+        "read",
+        help="Prints the file content on stdout",
+    )
+    model_read.add_argument("tablename", required=True, help="SQL table name")
+
+    model_delete = model_subparser.add_parser(
+        "delete",
+        help="Deletes Model file of the provided tablename",
+    )
+    model_delete.add_argument("tablename", required=True, help="SQL table name")
+
+    model_list = model_subparser.add_parser(
+        "list",
+        help="List columns of tablename on a table view",
+    )
+    model_list.add_argument("tablename", required=True, help="SQL table name")
+
+    model_addcol = model_subparser.add_parser(
+        "add",
+        help="Add a column/attribute on a Model with tablename",
+    )
+    model_addcol.add_argument("tablename", required=True, help="SQL table name")
+    model_addcol.add_argument("--name", help="Name of the column")
+    model_addcol.add_argument("--type", help="Python type of the column")
+
+    model_rmcol = model_subparser.add_parser(
+        "remove",
+        help="Remove a column/attribute on a Model with tablename",
+    )
+    model_rmcol.add_argument("tablename", required=True, help="SQL table name")
+    model_rmcol.add_argument("--name", help="Name of the column")
 
     return parser
 
 
-def _interactive(model: Model) -> None:
-    print("\n  ╔══════════════════════════════╗")
-    print("  ║   fam — FastAPI Model Mgr    ║")
-    print("  ╚══════════════════════════════╝")
-    print(f"  Arquivo : {model.filepath}")
-
-    while True:
-        print("  [1] Ler conteúdo arquivo")
-        print("  [2] Adicionar coluna")
-        print("  [3] Remover coluna")
-        print("  [4] Listar colunas")
-        print("  [0] Sair\n")
-        choice = input("  > ").strip()
-
-        if choice == "0":
-            print("  Saindo.\n")
-            break
-        elif choice == "1":
-            print(model.read())
-        elif choice == "2":
-            print()
-            name = input("  Nome da coluna               : ").strip()
-            py_type = input("  Tipo Python (padrão: str)    : ").strip() or "str"
-            nullable = input("  Nullable no banco? [s/N]     : ").strip().lower() == "s"
-            pk = input("  Primary key? [s/N]           : ").strip().lower() == "s"
-            unique = input("  Unique? [s/N]           : ").strip().lower() == "s"
-            index = input("  Index? [s/N]           : ").strip().lower() == "s"
-            autoincrement = (
-                input("  Autoincrement? [s/N]           : ").strip().lower() == "s"
-            )
-            print()
-            try:
-                flags = ColumnFlags(
-                    nullable=nullable,
-                    primary_key=pk,
-                    unique=unique,
-                    index=index,
-                    autoincrement=autoincrement,
-                )
-                model.addcol(name, py_type, flags)
-                print(f"  ✓ Coluna '{name}: {py_type}' adicionada com sucesso!\n")
-            except Exception as e:
-                print(f"  ✗ Erro: {e}\n")
-        elif choice == "3":
-            name = input("  Nome da coluna a remover: ").strip()
-            confirm = input(f"  Confirmar remoção de '{name}'? [s/N]: ").strip().lower()
-            if confirm == "s":
-                try:
-                    model.rmcol(name)
-                    print(f"\n  ✓ Coluna '{name}' removida com sucesso.\n")
-                except Exception as e:
-                    print(f"\n  ✗ Erro: {e}\n")
-            else:
-                print("  Operação cancelada")
-        elif choice == "4":
-            print(model.lscols())
-        else:
-            print("  Opção inválida.\n")
-
-
-def main() -> None:
+def main():
     parser = build_parser()
     args = parser.parse_args()
 
-    dirpath = Path(args.directory)
-    tablename = args.tablename
-
-    model = Model(tablename, dirpath)
-    model.create()
-
-    if args.action in (None, "interactive", "i"):
-        _interactive(model)
-    elif args.action == "list":
-        try:
-            print(model.lscols())
-        except Exception as e:
-            print(f"octo: erro: {e}", file=sys.stderr)
-            sys.exit(1)
-    elif args.action == "read":
-        try:
-            print(model.read())
-        except Exception as e:
-            print(f"octo: erro: {e}", file=sys.stderr)
-            sys.exit(1)
-    elif args.action == "add":
-        try:
-            flags = ColumnFlags(
-                nullable=args.nullable,
-                primary_key=args.primary_key,
-                unique=args.unique,
-                index=args.index,
-                autoincrement=args.autoincrement,
-            )
-            model.addcol(args.name, args.type, flags)
-            print(
-                f"✓ Coluna '{args.name}: {args.type}' adicionada em '{model.filepath}'"
-            )
-        except Exception as e:
-            print(f"octo: erro: {e}", file=sys.stderr)
-            sys.exit(1)
-    elif args.action == "remove":
-        try:
-            model.rmcol(args.name)
-            print(f"✓ Coluna '{args.name}' removida de '{model.filepath}'")
-        except Exception as e:
-            print(f"octo: erro: {e}", file=sys.stderr)
-            sys.exit(1)
+    if args.command == "init":
+        print("Not implemented yet")
+    elif args.command == "model":
+        model = Model(args.tablename)
+        match args.action:
+            case "create":
+                model.create()
+            case "read":
+                print(model.read())
+            case "delete":
+                model.delete()
+            case "add":
+                model.addcol(args.name, args.type)
+            case "remove":
+                model.rmcol(args.name)
 
 
 if __name__ == "__main__":

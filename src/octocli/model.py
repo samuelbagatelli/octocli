@@ -1,7 +1,6 @@
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 SQLTYPES: dict[str, str] = {
     "str": "String",

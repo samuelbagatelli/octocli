@@ -120,11 +120,13 @@ class Model:
             optional = "Optional" in mtype
             rawtype = re.sub(r"Optional\[|\]", "", mtype).strip()
 
+            nullable = "nullable=True" in args or "nullable=false" in args.lower()
             cols.append(
                 {
                     "name": name,
                     "type": rawtype,
                     "optional": optional,
+                    "nullable": nullable,
                     "raw": attr.group(0).strip(),
                     "args": args.strip(),
                 }
@@ -201,7 +203,7 @@ class Model:
         with self.filepath.open("w") as file:
             file.write(finalstr)
 
-    def lscols(self) -> str:
+    def list_columns(self) -> str:
         with self.filepath.open() as file:
             content = file.read()
 

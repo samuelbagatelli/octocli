@@ -5,7 +5,11 @@ from octocli.model import Model
 
 
 def build_parser() -> ArgumentParser:
-    parser = ArgumentParser("octo", formatter_class=RawDescriptionHelpFormatter)
+    parser = ArgumentParser(
+        "octo",
+        formatter_class=RawDescriptionHelpFormatter,
+        description="OctoCLI - Manage FastAPI/SQLAlchemy backend applications",
+    )
 
     parser.add_argument(
         "--version",
@@ -14,7 +18,7 @@ def build_parser() -> ArgumentParser:
         version=f"🐙 OctoCLI {__version__} 🐙",
     )
 
-    subparsers = parser.add_subparsers(dest="command")
+    subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser(
         "init",
@@ -23,48 +27,36 @@ def build_parser() -> ArgumentParser:
 
     model_parser = subparsers.add_parser(
         "model",
-        help="Manages SQLAlchemy Models on cwd",
+        help="Manage SQLAlchemy models",
     )
-    model_subparser = model_parser.add_subparsers(dest="action")
+    model_subparser = model_parser.add_subparsers(dest="model_action", required=True)
 
-    model_create = model_subparser.add_parser(
-        "create",
-        help="Create a model following CPID standard pattern",
-    )
-    model_create.add_argument("tablename", help="SQL table name")
+    model_add = model_subparser.add_parser("add", help="Create a new model")
+    model_add.add_argument("tablename", help="SQL table name")
 
-    model_read = model_subparser.add_parser(
-        "read",
-        help="Prints the file content on stdout",
-    )
-    model_read.add_argument("tablename", help="SQL table name")
+    model_rm = model_subparser.add_parser("rm", help="Delete a model")
+    model_rm.add_argument("tablename", help="SQL table name")
 
-    model_delete = model_subparser.add_parser(
-        "delete",
-        help="Deletes Model file of the provided tablename",
-    )
-    model_delete.add_argument("tablename", help="SQL table name")
+    model_show = model_subparser.add_parser("show", help="Show model file contents")
+    model_show.add_argument("tablename", help="SQL table name")
 
-    model_list = model_subparser.add_parser(
-        "list",
-        help="List columns of tablename on a table view",
-    )
-    model_list.add_argument("tablename", help="SQL table name")
+    model_ls = model_subparser.add_parser("ls", help="List model columns")
+    model_ls.add_argument("tablename", help="SQL table name")
 
-    model_addcol = model_subparser.add_parser(
-        "add",
-        help="Add a column/attribute on a Model with tablename",
+    column_parser = subparsers.add_parser(
+        "column",
+        help="Manage model columns",
     )
-    model_addcol.add_argument("tablename", help="SQL table name")
-    model_addcol.add_argument("--name", help="Name of the column")
-    model_addcol.add_argument("--type", help="Python type of the column")
+    column_subparser = column_parser.add_subparsers(dest="column_action", required=True)
 
-    model_rmcol = model_subparser.add_parser(
-        "remove",
-        help="Remove a column/attribute on a Model with tablename",
-    )
-    model_rmcol.add_argument("tablename", help="SQL table name")
-    model_rmcol.add_argument("--name", help="Name of the column")
+    column_add = column_subparser.add_parser("add", help="Add a column to a model")
+    column_add.add_argument("tablename", help="SQL table name")
+    column_add.add_argument("column", help="Column name")
+    column_add.add_argument("--type", required=True, help="Python type of the column")
+
+    column_rm = column_subparser.add_parser("rm", help="Remove a column from a model")
+    column_rm.add_argument("tablename", help="SQL table name")
+    column_rm.add_argument("column", help="Column name")
 
     return parser
 
@@ -77,17 +69,20 @@ def main():
         print("Not implemented yet")
     elif args.command == "model":
         model = Model(args.tablename)
-        match args.action:
-            case "create":
-                model.create()
-            case "read":
-                print(model.read())
-            case "delete":
-                model.delete()
-            case "add":
-                model.addcol(args.name, args.type)
-            case "remove":
-                model.rmcol(args.name)
+        if args.model_action == "add":
+            model.create()
+        elif args.model_action == "rm":
+            model.delete()
+        elif args.model_action == "show":
+            print(model.read())
+        elif args.model_action == "ls":
+            print(model.list_columns())
+    elif args.command == "column":
+        model = Model(args.tablename)
+        if args.column_action == "add":
+            model.addcol(args.column, args.type)
+        elif args.column_action == "rm":
+            model.rmcol(args.column)
 
 
 if __name__ == "__main__":
